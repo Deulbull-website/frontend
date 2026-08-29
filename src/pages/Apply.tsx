@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDDay } from '../utils/dday';
 
-// 모집 마감일: 2026-09-07. 날짜만 바뀌면 여기 한 곳만 수정하면 됩니다.
-const DEADLINE = new Date('2026-09-07T23:59:59');
+// 모집 마감일: 2026-09-06. 날짜만 바뀌면 여기 한 곳만 수정하면 됩니다.
+const DEADLINE = new Date('2026-09-06T23:59:59');
 
 export default function Apply() {
   const [dday, setDday] = useState(() => getDDay(DEADLINE));
@@ -34,7 +34,7 @@ export default function Apply() {
           모집 포스터
         </div>
         <div className="flex flex-col gap-3.5">
-          <InfoRow title="신입부원 모집 기간" value="2026.09.01 ~ 2026.09.07" />
+          <InfoRow title="신입부원 모집 기간" value="2026.08.31 ~ 2026.09.06" />
           <InfoRow title="모집분야" value={<>보컬 · 기타 · 베이스 · 드럼 · 키보드<br />· 각 파트별 튜터링</>} />
           <InfoRow title="오디션 일정" value="신입부원 모집 마감 후 카카오톡 개별 공지" />
           <InfoRow title="동아리 회비" value="35,000원" />
