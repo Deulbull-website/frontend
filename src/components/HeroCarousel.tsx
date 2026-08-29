@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 interface HeroCarouselProps {
   images: string[];
   intervalMs?: number;
+  onIndexChange?: (index: number) => void;
 }
 
 // 인스타그램 여러 장 게시물의 점 인디케이터와 동일한 방식.
@@ -22,7 +23,8 @@ function dotScale(distance: number) {
   return 0.28;
 }
 
-function DotsPager({ total, active }: { total: number; active: number }) {
+// Home.tsx 등 바깥쪽에서 사진 위 그라데이션보다 위 레이어에 렌더링할 수 있도록 별도로 export.
+export function DotsPager({ total, active }: { total: number; active: number }) {
   if (total <= 1) return null;
 
   const visibleCount = Math.min(total, MAX_VISIBLE_DOTS);
@@ -61,7 +63,7 @@ function DotsPager({ total, active }: { total: number; active: number }) {
   );
 }
 
-export default function HeroCarousel({ images, intervalMs = 4000 }: HeroCarouselProps) {
+export default function HeroCarousel({ images, intervalMs = 4000, onIndexChange }: HeroCarouselProps) {
   const [index, setIndex] = useState(0);
   const total = images.length;
   const dragStartX = useRef<number | null>(null);
@@ -70,6 +72,10 @@ export default function HeroCarousel({ images, intervalMs = 4000 }: HeroCarousel
   const goTo = (next: number) => {
     setIndex(((next % total) + total) % total);
   };
+
+  useEffect(() => {
+    onIndexChange?.(index);
+  }, [index, onIndexChange]);
 
   useEffect(() => {
     if (total <= 1) return;
@@ -95,39 +101,33 @@ export default function HeroCarousel({ images, intervalMs = 4000 }: HeroCarousel
   };
 
   return (
-    <div className="relative h-full w-full">
+    <div
+      className="h-full w-full touch-pan-y overflow-hidden"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={() => {
+        dragging.current = false;
+        dragStartX.current = null;
+      }}
+    >
       <div
-        className="h-full w-full touch-pan-y overflow-hidden"
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={() => {
-          dragging.current = false;
-          dragStartX.current = null;
+        className="flex h-full"
+        style={{
+          width: `${total * 100}%`,
+          transform: `translateX(-${(index * 100) / total}%)`,
+          transition: 'transform 400ms ease',
         }}
       >
-        <div
-          className="flex h-full"
-          style={{
-            width: `${total * 100}%`,
-            transform: `translateX(-${(index * 100) / total}%)`,
-            transition: 'transform 400ms ease',
-          }}
-        >
-          {images.map((src, i) => (
-            <div key={src} className="h-full flex-none" style={{ width: `${100 / total}%` }}>
-              <img
-                src={src}
-                alt={`들불 공연 사진 ${i + 1}`}
-                draggable={false}
-                className="h-full w-full select-none object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
-        <DotsPager total={total} active={index} />
+        {images.map((src, i) => (
+          <div key={src} className="h-full flex-none" style={{ width: `${100 / total}%` }}>
+            <img
+              src={src}
+              alt={`들불 공연 사진 ${i + 1}`}
+              draggable={false}
+              className="h-full w-full select-none object-cover"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
