@@ -184,9 +184,11 @@ export default function ApplyForm() {
                 'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
             }}
           />
-          <div className="absolute bottom-4 left-[22px] flex flex-col gap-1">
+          {/* right-[180px]로 폭을 제한해, 화면이 좁은 기기에서도 포스터 이미지 아래로 텍스트가
+              깔리지 않고 줄바꿈되도록 함 (포스터: right-18px + width 153px = 171px) */}
+          <div className="absolute bottom-4 left-[22px] right-[180px] flex flex-col gap-1">
             <p className="text-xs tracking-[0.14em] text-white/75">한성대학교 중앙노래패 들불</p>
-            <p className="text-[30px] font-black text-white">신입부원 모집</p>
+            <p className="text-[30px] font-black leading-[1.1] text-white">신입부원 모집</p>
           </div>
           {/* 포스터 원본 비율 그대로(잘리거나 늘어나지 않게), 폭만 맞추고 높이는 자동 계산 — 하단이 '신입부원 모집' 문구 아래까지 닿도록 크게 */}
           <img

@@ -15,6 +15,12 @@ function seededRandom(seed: number) {
   return x - Math.floor(x);
 }
 
+// 필름 그레인 텍스처 — CSS radial-gradient로 점을 일정 간격(3px)마다 반복시키면 확대했을 때
+// 규칙적인 점 격자(도트 패턴)로 보이는 문제가 있어, SVG feTurbulence로 만든 진짜 랜덤 노이즈
+// 이미지를 타일링해서 사용합니다. 확대해도 격자무늬 없이 자연스러운 그레인으로 보입니다.
+const NOISE_SVG =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch' seed='7'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+
 // 시안에서 재/먼지 입자에 쓰인 회백색 계열 팔레트 (6가지를 순환)
 const DUST_COLORS = [
   'rgba(200,192,183,0.4)',
@@ -78,12 +84,13 @@ export default function AshBackground() {
         ))}
       </div>
 
-      {/* 2) 미세한 필름 그레인(노이즈) 텍스처 */}
+      {/* 2) 미세한 필름 그레인(노이즈) 텍스처 — 랜덤 노이즈 타일이라 확대해도 점 격자로 보이지 않음 */}
       <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-50"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-40 mix-blend-overlay"
         style={{
-          backgroundImage: 'radial-gradient(rgba(0,0,0,.55) 1px, rgba(0,0,0,0) 1px)',
-          backgroundSize: '3px 3px',
+          backgroundImage: `url("${NOISE_SVG}")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '160px 160px',
         }}
       />
 

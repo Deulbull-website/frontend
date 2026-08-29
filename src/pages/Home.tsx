@@ -110,7 +110,7 @@ export default function Home() {
         />
 
         {/* 점 인디케이터 — 그라데이션보다 뒤(아래)에서 렌더링하면 사진 위 그라데이션에 가려지므로 그 다음에 렌더링 */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-[100px] flex justify-center">
+        <div className="pointer-events-none absolute inset-x-0 bottom-[76px] flex justify-center">
           <DotsPager total={HERO_IMAGES.length} active={heroIndex} />
         </div>
 
@@ -124,7 +124,7 @@ export default function Home() {
             const next = currentIndex >= 0 ? sections[currentIndex + 1] : sections[1];
             next?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
-          className="absolute inset-x-0 bottom-[62px] flex justify-center py-2 text-white/70"
+          className="absolute inset-x-0 bottom-[35px] flex justify-center py-2 text-white/70"
         >
           <span className="animate-bounce">
             <ChevronDownIcon />
@@ -145,7 +145,7 @@ export default function Home() {
         </div>
 
         {/* 중앙 타이틀 */}
-        <Reveal className="absolute inset-x-6 bottom-[130px] flex flex-col items-center gap-[12px] text-center">
+        <Reveal className="absolute inset-x-6 bottom-[106px] flex flex-col items-center gap-[12px] text-center">
           <p className="text-xs tracking-[0.34em] text-white/66">
             HANSUNG UNIV.BAND CLUB
           </p>
