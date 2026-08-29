@@ -143,7 +143,7 @@ export default function ApplyForm() {
       });
 
       if (res.status === 201) {
-        alert('들불에 지원해주셔서 감사합니다. 오디션 안내를 기다려주세요!');
+        alert('들불에 지원해주셔서 감사합니다. 원하시는 좋은 결과가 있으시길 진심으로 응원합니다!');
         setData(initialData);
         setAttemptedSubmit(false);
       } else if (res.status === 400) {
