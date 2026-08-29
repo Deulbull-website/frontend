@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 // 실제 배포된 백엔드 주소. Vercel 환경변수 VITE_API_BASE_URL을 설정하면 그 값이 우선 적용되고,
 // 안 설정했을 때는 지금 쓰고 있는 nip.io 주소로 동작합니다.
@@ -78,8 +78,12 @@ function isFormComplete(data: ApplyFormData) {
     data.grade !== null &&
     data.track1.trim() !== '' &&
     data.track2.trim() !== '' &&
+    data.motivation.trim() !== '' &&
     data.part.length > 0 &&
+    data.experience.trim() !== '' &&
     data.tutoringWish !== null &&
+    data.favorites.trim() !== '' &&
+    data.lastWord.trim() !== '' &&
     data.agreePrivacy &&
     data.agreeNoEdit
   );
@@ -88,6 +92,8 @@ function isFormComplete(data: ApplyFormData) {
 export default function ApplyForm() {
   const [data, setData] = useState<ApplyFormData>(initialData);
   const [submitting, setSubmitting] = useState(false);
+  // 제출 버튼을 한 번이라도 눌러보기 전까지는 필수 항목 안내(빨간 글씨)를 숨겨둡니다.
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const update = <K extends keyof ApplyFormData>(key: K, value: ApplyFormData[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
@@ -100,6 +106,8 @@ export default function ApplyForm() {
   };
 
   const handleSubmit = async () => {
+    setAttemptedSubmit(true);
+
     if (!data.agreePrivacy || !data.agreeNoEdit) {
       alert('필수 동의 항목을 확인해주세요.');
       return;
@@ -135,8 +143,9 @@ export default function ApplyForm() {
       });
 
       if (res.status === 201) {
-        alert('지원서가 정상적으로 제출되었습니다. 오디션 안내를 기다려주세요!');
+        alert('들불에 지원해주셔서 감사합니다. 오디션 안내를 기다려주세요!');
         setData(initialData);
+        setAttemptedSubmit(false);
       } else if (res.status === 400) {
         const err = await res.json().catch(() => null);
         alert(`입력값을 다시 확인해주세요.${err?.message ? `\n(${err.message})` : ''}`);
@@ -158,7 +167,34 @@ export default function ApplyForm() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-7 px-6 pt-7">
+      {/* 공연 사진 + 포스터 (디자인 수정본에서 새로 추가된 부분) */}
+      <div className="relative mt-[18px] h-[190px] overflow-hidden">
+        <div className="grid h-full w-full place-items-center bg-white/10 text-xs text-white/40">
+          공연 사진
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
+          }}
+        />
+        <div className="absolute bottom-4 left-[22px] flex flex-col gap-1">
+          <p className="text-xs tracking-[0.14em] text-white/75">한성대학교 중앙노래패 들불</p>
+          <p className="text-[30px] font-black text-white">신입부원 모집</p>
+        </div>
+        <div className="absolute right-[18px] top-3.5 grid h-[150px] w-[104px] place-items-center bg-white/10 text-[10px] text-white/40">
+          포스터
+        </div>
+      </div>
+
+      <div className="px-6 pt-5">
+        <p className="font-['Bebas_Neue',_Impact,_sans-serif] text-[19px] tracking-[0.1em] text-white/80">
+          2026.08.31 — 2026.09.06
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-[50px] px-6 pt-7">
         <RadioGroup
           title="2026 - 2 재학 상태"
           options={['재학', '휴학'] as EnrollStatus[]}
@@ -166,41 +202,53 @@ export default function ApplyForm() {
           onChange={(v) => update('enrollStatus', v)}
           required
           requiredMessage="재학 상태를 선택해주세요."
+          showErrors={attemptedSubmit}
         />
 
         <TextField
           title="이름"
           value={data.name}
           onChange={(v) => update('name', v)}
+          placeholder="김들불"
           requiredMessage="이름을 입력해주세요."
+          showErrors={attemptedSubmit}
+          widthClass="w-[150px]"
         />
 
-        <div className="flex flex-col gap-2">
-          <p className="text-[13px] font-bold text-white">전화번호</p>
+        <div className="flex flex-col gap-2.5">
+          <p className="text-[19px] font-extrabold text-white">전화번호</p>
           <div className="flex items-center gap-2">
             {data.phone.map((part, i) => (
-              <input
-                key={i}
-                value={part}
-                onChange={(e) => {
-                  const next = [...data.phone] as [string, string, string];
-                  next[i] = e.target.value.replace(/\D/g, '');
-                  update('phone', next);
-                }}
-                maxLength={i === 0 ? 3 : 4}
-                className="h-[38px] w-[66px] rounded-lg bg-[#d9d9d9] text-center text-sm text-[#6d6d6d] outline-none"
-                placeholder={i === 0 ? '010' : '0000'}
-              />
+              <Fragment key={i}>
+                {i > 0 && <span className="text-white/60">–</span>}
+                <input
+                  value={part}
+                  onChange={(e) => {
+                    const next = [...data.phone] as [string, string, string];
+                    next[i] = e.target.value.replace(/\D/g, '');
+                    update('phone', next);
+                  }}
+                  maxLength={i === 0 ? 3 : 4}
+                  className={`h-[38px] rounded-lg bg-[#d9d9d9] text-center text-[15px] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100 ${
+                    i === 0 ? 'w-[66px]' : 'w-[71px]'
+                  }`}
+                  placeholder={i === 0 ? '010' : '0000'}
+                />
+              </Fragment>
             ))}
           </div>
-          <RequiredHint show={data.phone.some((p) => !p)} message="전화번호를 입력해주세요." />
+          <RequiredHint show={attemptedSubmit && data.phone.some((p) => !p)} message="전화번호를 입력해주세요." />
         </div>
 
         <TextField
           title="학번"
           value={data.studentId}
-          onChange={(v) => update('studentId', v)}
+          onChange={(v) => update('studentId', v.replace(/\D/g, '').slice(0, 7))}
+          placeholder="2612345"
           requiredMessage="학번을 입력해주세요."
+          showErrors={attemptedSubmit}
+          widthClass="w-[90px]"
+          center
         />
 
         <RadioGroup
@@ -210,50 +258,69 @@ export default function ApplyForm() {
           onChange={(v) => update('grade', v)}
           required
           requiredMessage="학년을 선택해주세요."
+          showErrors={attemptedSubmit}
         />
 
         <TextField
-          title="1트랙 (1학년의 경우 단과 대학)"
+          title="1트랙"
           value={data.track1}
-          onChange={(v) => update('track1', v)}
+          onChange={(v) => update('track1', v.slice(0, 15))}
+          placeholder="부동산트랙"
+          hint={[
+            '* 1학년의 경우 단과 대학',
+            '* 트랙 이름을 정확하게 입력해 주세요.',
+            'ex) 모바일소프트웨어트랙, 영미문화콘텐츠트랙',
+          ]}
           requiredMessage="트랙(단과대학)을 입력해주세요."
+          showErrors={attemptedSubmit}
+          widthClass="w-[190px]"
         />
 
         <TextField
-          title="2트랙 (복수/부전공, 없으면 직접 '없음'이라고 입력)"
+          title="2트랙"
           value={data.track2}
-          onChange={(v) => update('track2', v)}
+          onChange={(v) => update('track2', v.slice(0, 15))}
           placeholder="없음"
+          hint="* 없을 경우 '없음'이라고 작성해주세요."
           requiredMessage="2트랙을 입력해주세요. 없으면 '없음'이라고 적어주세요."
+          showErrors={attemptedSubmit}
+          widthClass="w-[190px]"
         />
       </div>
 
+      <div className="mx-6 mt-[64px] h-px bg-white/18" />
+
       <TextAreaField
-        className="px-6 pt-[34px]"
+        className="px-6 pt-[39px]"
         title="지원 동기"
         placeholder="자유롭게 작성해주세요. (최대 1000자)"
         value={data.motivation}
         onChange={(v) => update('motivation', v)}
         maxLength={1000}
         height={230}
+        requiredMessage="지원 동기를 입력해주세요."
+        showErrors={attemptedSubmit}
       />
 
-      <div className="flex flex-col gap-2.5 px-6 pt-[30px]">
-        <p className="text-[19px] font-extrabold text-white">지원 파트 (복수 선택 가능)</p>
+      <div className="flex flex-col gap-2.5 px-6 pt-[50px]">
+        <p className="text-[19px] font-extrabold text-white">지원 파트</p>
         <CheckboxGroup options={PARTS} value={data.part} onToggle={togglePart} />
-        <RequiredHint show={data.part.length === 0} message="지원 파트를 1개 이상 선택해주세요." />
+        <p className="text-[13px] leading-[1.6] text-white/62">* 복수 선택 가능</p>
+        <RequiredHint show={attemptedSubmit && data.part.length === 0} message="지원 파트를 1개 이상 선택해주세요." />
       </div>
 
       <TextAreaField
-        className="px-6 pt-[30px]"
+        className="px-6 pt-[50px]"
         title="악기 경력"
         placeholder="자유롭게 작성해 주세요. ex) 없음 or 밴드부 1년, 기타 3년"
         value={data.experience}
         onChange={(v) => update('experience', v)}
         height={74}
+        requiredMessage="악기 경력을 입력해주세요. 없으면 '없음'이라고 적어주세요."
+        showErrors={attemptedSubmit}
       />
 
-      <div className="flex flex-col gap-2.5 px-6 pt-[30px]">
+      <div className="flex flex-col gap-2.5 px-6 pt-[50px]">
         <p className="text-[19px] font-extrabold text-white">튜터링 희망 여부</p>
         <RadioGroup
           options={['희망', '미희망'] as TutoringWish[]}
@@ -261,56 +328,58 @@ export default function ApplyForm() {
           onChange={(v) => update('tutoringWish', v)}
           bare
         />
-        <p className="text-xs leading-[1.7] text-white/62">
-          * 수요 조사입니다. 무경험자가 아닌 분들은 상황에 따라 튜터링을 받을 수 있습니다
-        </p>
-        <RequiredHint show={!data.tutoringWish} message="튜터링 희망 여부를 선택해 주세요" />
+        <div className="flex flex-col gap-0.5">
+          <p className="text-[13px] leading-[1.7] text-white/62">
+            * 악기를 전혀 다뤄보지 않은 분도 무대에 오를 수 있도록 돕는 프로그램입니다.
+          </p>
+          <p className="text-[13px] leading-[1.7] text-white/62">
+            * 악기 경험이 있으신 경우, 상황에 따라 참여가 어려울 수 있습니다.
+          </p>
+        </div>
+        <RequiredHint show={attemptedSubmit && !data.tutoringWish} message="튜터링 희망 여부를 선택해 주세요" />
       </div>
 
       <TextAreaField
-        className="px-6 pt-[30px]"
+        className="px-6 pt-[50px]"
         title="좋아하는 장르, 노래, 아티스트"
         placeholder="자유롭게 작성해 주세요."
         value={data.favorites}
         onChange={(v) => update('favorites', v)}
         height={104}
+        requiredMessage="좋아하는 장르, 노래, 아티스트를 입력해주세요."
+        showErrors={attemptedSubmit}
       />
 
-      <div className="flex flex-col gap-2.5 px-6 pt-[30px]">
-        <div className="flex items-baseline gap-2.5">
-          <p className="text-[19px] font-extrabold text-white">연주 영상</p>
-          <p className="text-xs text-white/62">* 유튜브 링크로 제출해주세요</p>
-        </div>
+      <div className="mx-6 mt-[64px] h-px bg-white/18" />
+
+      <div className="flex flex-col gap-2.5 px-6 pt-[39px]">
+        <p className="text-[19px] font-extrabold text-white">연주 영상</p>
         <input
           value={data.videoUrl}
           onChange={(e) => update('videoUrl', e.target.value)}
           placeholder="https://youtube.com/..."
-          className="h-[38px] w-full max-w-[280px] rounded-lg bg-[#d9d9d9] px-3 text-sm text-[#6d6d6d] outline-none"
+          className="h-[38px] w-full max-w-[280px] rounded-lg bg-[#d9d9d9] px-3 text-[15px] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100"
         />
+        <p className="text-[13px] text-white/62">
+          * 개인 유튜브 계정에 업로드 후 링크(URL) 첨부 (공개 범위/권한 설정을 꼭 확인해 주세요!)
+        </p>
       </div>
 
       <TextAreaField
-        className="px-6 pt-[30px]"
+        className="px-6 pt-[50px]"
         title="마지막으로 하고 싶은 말"
         placeholder="자유롭게 작성해주세요. (최대 1000자)"
         value={data.lastWord}
         onChange={(v) => update('lastWord', v)}
         maxLength={1000}
         height={230}
+        requiredMessage="마지막으로 하고 싶은 말을 입력해주세요."
+        showErrors={attemptedSubmit}
       />
 
-      <div className="px-6 pt-11">
-        <ul className="flex list-disc flex-col gap-2.5 pl-[18px]">
-          <li className="text-[13.5px] leading-[1.75] text-white/86">
-            개인정보를 오타 없이 정확하게 입력하셨는지 확인해 주세요!
-          </li>
-          <li className="text-[13.5px] leading-[1.75] text-white/86">
-            제출 후에는 수정이 불가하니 한번 더 검토해주세요!!
-          </li>
-        </ul>
-      </div>
+      <div className="mx-6 mt-[64px] h-px bg-white/18" />
 
-      <div className="flex flex-col gap-4 px-6 pb-14 pt-6">
+      <div className="flex flex-col gap-4 px-6 pb-14 pt-[39px]">
         <div className="border border-white/18 bg-white/[0.04]">
           <div className="flex items-center justify-between gap-3 border-b border-white/14 px-4.5 py-4">
             <span className="text-[13.5px] font-semibold text-white">
@@ -355,16 +424,16 @@ export default function ApplyForm() {
             className="mt-0.5 h-[17px] w-[17px] flex-none"
           />
           <span className="text-[12.5px] leading-[1.6] text-white/72">
-            제출 후에는 수정이 불가함을 확인했습니다.
+            제출 후에는 수정이 불가함을 확인했습니다. (필수)
           </span>
         </label>
 
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="grid h-[62px] place-items-center rounded-2xl bg-[#f2efe8] text-[18px] font-extrabold text-[#141416] disabled:opacity-60"
+          className="mt-[60px] grid h-[62px] place-items-center rounded-2xl bg-[#f2efe8] text-[18px] font-extrabold text-[#141416] disabled:opacity-60"
         >
-          {submitting ? '제출 중...' : '동의하고 최종 제출'}
+          {submitting ? '제출 중...' : '최종 제출'}
         </button>
       </div>
     </div>
@@ -382,23 +451,51 @@ function TextField({
   onChange,
   requiredMessage,
   placeholder,
+  showErrors,
+  hint,
+  widthClass = 'w-full',
+  center,
 }: {
   title: string;
   value: string;
   onChange: (v: string) => void;
   requiredMessage?: string;
   placeholder?: string;
+  showErrors: boolean;
+  hint?: string | string[];
+  widthClass?: string;
+  center?: boolean;
 }) {
+  const hints = hint == null ? [] : Array.isArray(hint) ? hint : [hint];
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-[13px] font-bold text-white">{title}</p>
+    <div className="flex flex-col gap-2.5">
+      <p className="text-[19px] font-extrabold text-white">{title}</p>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-[38px] w-[200px] rounded-lg bg-[#d9d9d9] px-3 text-sm text-[#6d6d6d] outline-none"
+        className={`h-[38px] ${widthClass} rounded-lg bg-[#d9d9d9] px-3 text-[15px] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100 ${
+          center ? 'text-center' : ''
+        }`}
       />
-      {requiredMessage && <RequiredHint show={!value} message={requiredMessage} />}
+      {hints.length > 0 && (
+        <div className="flex flex-col gap-0.5">
+          {hints.map((h, i) => {
+            // '*'로 시작하지 않는 줄은 앞줄의 '* ' 폭만큼 들여써서 텍스트 시작 위치를 맞춥니다.
+            const isBullet = h.trimStart().startsWith('*');
+            return (
+              <p
+                key={i}
+                className="text-[13px] leading-[1.5] text-white/62"
+                style={!isBullet ? { paddingLeft: '1em' } : undefined}
+              >
+                {h}
+              </p>
+            );
+          })}
+        </div>
+      )}
+      {requiredMessage && <RequiredHint show={showErrors && !value} message={requiredMessage} />}
     </div>
   );
 }
@@ -411,6 +508,8 @@ function TextAreaField({
   maxLength,
   height,
   className = '',
+  requiredMessage,
+  showErrors,
 }: {
   title: string;
   placeholder: string;
@@ -419,6 +518,8 @@ function TextAreaField({
   maxLength?: number;
   height: number;
   className?: string;
+  requiredMessage?: string;
+  showErrors?: boolean;
 }) {
   return (
     <div className={`flex flex-col gap-2.5 ${className}`}>
@@ -429,8 +530,9 @@ function TextAreaField({
         placeholder={placeholder}
         maxLength={maxLength}
         style={{ height }}
-        className="w-full resize-none rounded-xl bg-[#d9d9d9] p-3.5 text-[13px] leading-[1.7] text-[#6d6d6d] outline-none"
+        className="w-full resize-none rounded-xl bg-[#d9d9d9] p-3.5 text-[15px] leading-[1.7] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100"
       />
+      {requiredMessage && <RequiredHint show={!!showErrors && !value.trim()} message={requiredMessage} />}
     </div>
   );
 }
@@ -443,6 +545,7 @@ function RadioGroup<T extends string>({
   required,
   requiredMessage,
   bare,
+  showErrors,
 }: {
   title?: string;
   options: T[];
@@ -451,10 +554,11 @@ function RadioGroup<T extends string>({
   required?: boolean;
   requiredMessage?: string;
   bare?: boolean;
+  showErrors?: boolean;
 }) {
   return (
     <div className={bare ? '' : 'flex flex-col gap-2.5'}>
-      {title && <p className="text-[13px] font-bold text-white">{title}</p>}
+      {title && <p className="text-[19px] font-extrabold text-white">{title}</p>}
       <div className="flex flex-col gap-2.5">
         {options.map((opt) => {
           const selected = value === opt;
@@ -472,12 +576,12 @@ function RadioGroup<T extends string>({
               >
                 {selected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
               </span>
-              <span className={`text-[13px] ${selected ? 'text-white/90' : 'text-white/70'}`}>{opt}</span>
+              <span className={`text-[16px] ${selected ? 'text-white/90' : 'text-white/70'}`}>{opt}</span>
             </button>
           );
         })}
       </div>
-      {required && <RequiredHint show={!value} message={requiredMessage ?? ''} />}
+      {required && <RequiredHint show={!!showErrors && !value} message={requiredMessage ?? ''} />}
     </div>
   );
 }
@@ -510,7 +614,7 @@ function CheckboxGroup<T extends string>({
             >
               {selected && <span className="h-1.5 w-1.5 rounded-[1px] bg-[#141416]" />}
             </span>
-            <span className={`text-[13px] ${selected ? 'text-white/90' : 'text-white/70'}`}>{opt}</span>
+            <span className={`text-[16px] ${selected ? 'text-white/90' : 'text-white/70'}`}>{opt}</span>
           </button>
         );
       })}

@@ -57,14 +57,14 @@ export default function About() {
         <div className="grid grid-cols-[150px_1fr] items-start gap-[18px]">
           <div className="grid h-28 place-items-center bg-white/10 text-xs text-white/40">정기공연</div>
           <p className="text-[13.5px] leading-[1.8] text-white/84">
-            학기당 한 번 정기공연과 연합공연을 개최하며, 대동제·체육대회·버스킹 등 다양한 교내 행사에도
+            학기당 한 번 정기공연과 연합공연을 직접 주최하며, 대동제·체육대회·버스킹 등 다양한 교내 행사에도
             적극적으로 참여하고 있습니다.
           </p>
         </div>
         <div className="grid grid-cols-[150px_1fr] items-start gap-[18px]">
           <div className="grid h-28 place-items-center bg-white/10 text-xs text-white/40">MT / 소모임</div>
           <p className="text-[13.5px] leading-[1.8] text-white/84">
-            공연 외에도 다양한 소모임, MT, 악기 튜터링, 개강파티 등 다채로운 활동을 함께하고 있습니다.
+            공연 외에도 다양한 소모임, MT, 개강파티 등 다채로운 활동을 함께하고 있습니다.
           </p>
         </div>
       </div>
