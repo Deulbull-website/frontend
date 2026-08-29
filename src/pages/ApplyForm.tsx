@@ -1,6 +1,12 @@
 import { useState } from 'react';
 
+// 실제 배포된 백엔드 주소. Vercel 환경변수 VITE_API_BASE_URL을 설정하면 그 값이 우선 적용되고,
+// 안 설정했을 때는 지금 쓰고 있는 nip.io 주소로 동작합니다.
+// 나중에 가비아 도메인으로 바뀌면 Vercel 환경변수 값만 바꿔주면 됩니다 (코드 수정 불필요).
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://43-202-195-222.nip.io';
+
 type EnrollStatus = '재학' | '휴학';
+type Grade = '1학년' | '2학년' | '3학년' | '4학년';
 type Part = '보컬' | '기타' | '베이스' | '드럼' | '키보드';
 type TutoringWish = '희망' | '미희망';
 
@@ -9,9 +15,11 @@ interface ApplyFormData {
   name: string;
   phone: [string, string, string];
   studentId: string;
-  track: string;
+  grade: Grade | null;
+  track1: string;
+  track2: string;
   motivation: string;
-  part: Part | null;
+  part: Part[];
   experience: string;
   tutoringWish: TutoringWish | null;
   favorites: string;
@@ -21,6 +29,7 @@ interface ApplyFormData {
   agreeNoEdit: boolean;
 }
 
+const GRADES: Grade[] = ['1학년', '2학년', '3학년', '4학년'];
 const PARTS: Part[] = ['보컬', '기타', '베이스', '드럼', '키보드'];
 
 const initialData: ApplyFormData = {
@@ -28,9 +37,11 @@ const initialData: ApplyFormData = {
   name: '',
   phone: ['', '', ''],
   studentId: '',
-  track: '',
+  grade: null,
+  track1: '',
+  track2: '',
   motivation: '',
-  part: null,
+  part: [],
   experience: '',
   tutoringWish: null,
   favorites: '',
@@ -40,6 +51,40 @@ const initialData: ApplyFormData = {
   agreeNoEdit: false,
 };
 
+// API 명세서(들불 신입부원모집 API 명세서 > 지원서 제출) 기준 요청 바디 타입
+interface ApplicationRequestBody {
+  name: string;
+  phone: string;
+  studentId: string;
+  track1: string;
+  track2: string;
+  status: EnrollStatus;
+  grade: Grade;
+  part: Part[];
+  tutoringPref: TutoringWish;
+  motivation: string;
+  experience: string;
+  genrePref: string;
+  videoUrl: string;
+  lastWord: string;
+}
+
+function isFormComplete(data: ApplyFormData) {
+  return (
+    data.enrollStatus !== null &&
+    data.name.trim() !== '' &&
+    data.phone.every((p) => p.trim() !== '') &&
+    data.studentId.trim() !== '' &&
+    data.grade !== null &&
+    data.track1.trim() !== '' &&
+    data.track2.trim() !== '' &&
+    data.part.length > 0 &&
+    data.tutoringWish !== null &&
+    data.agreePrivacy &&
+    data.agreeNoEdit
+  );
+}
+
 export default function ApplyForm() {
   const [data, setData] = useState<ApplyFormData>(initialData);
   const [submitting, setSubmitting] = useState(false);
@@ -47,17 +92,59 @@ export default function ApplyForm() {
   const update = <K extends keyof ApplyFormData>(key: K, value: ApplyFormData[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
 
+  const togglePart = (part: Part) => {
+    setData((prev) => ({
+      ...prev,
+      part: prev.part.includes(part) ? prev.part.filter((p) => p !== part) : [...prev.part, part],
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!data.agreePrivacy || !data.agreeNoEdit) {
       alert('필수 동의 항목을 확인해주세요.');
       return;
     }
+    if (!isFormComplete(data)) {
+      alert('필수 입력 항목(*)을 모두 채워주세요.');
+      return;
+    }
+
+    const payload: ApplicationRequestBody = {
+      name: data.name,
+      phone: data.phone.join(''),
+      studentId: data.studentId,
+      track1: data.track1,
+      track2: data.track2,
+      status: data.enrollStatus as EnrollStatus,
+      grade: data.grade as Grade,
+      part: data.part,
+      tutoringPref: data.tutoringWish as TutoringWish,
+      motivation: data.motivation,
+      experience: data.experience,
+      genrePref: data.favorites,
+      videoUrl: data.videoUrl,
+      lastWord: data.lastWord,
+    };
+
     setSubmitting(true);
     try {
-      // TODO: 백엔드 API 완성되면 여기서 실제 제출 요청으로 교체
-      // await fetch('/api/applications', { method: 'POST', body: JSON.stringify(data) })
-      console.log('지원서 제출 데이터', data);
-      alert('제출이 완료되었습니다. (백엔드 연결 전 임시 동작입니다)');
+      const res = await fetch(`${API_BASE}/api/applications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.status === 201) {
+        alert('지원서가 정상적으로 제출되었습니다. 오디션 안내를 기다려주세요!');
+        setData(initialData);
+      } else if (res.status === 400) {
+        const err = await res.json().catch(() => null);
+        alert(`입력값을 다시 확인해주세요.${err?.message ? `\n(${err.message})` : ''}`);
+      } else {
+        alert('제출 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    } catch {
+      alert('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
     } finally {
       setSubmitting(false);
     }
@@ -116,11 +203,28 @@ export default function ApplyForm() {
           requiredMessage="학번을 입력해주세요."
         />
 
+        <RadioGroup
+          title="학년"
+          options={GRADES}
+          value={data.grade}
+          onChange={(v) => update('grade', v)}
+          required
+          requiredMessage="학년을 선택해주세요."
+        />
+
         <TextField
           title="1트랙 (1학년의 경우 단과 대학)"
-          value={data.track}
-          onChange={(v) => update('track', v)}
+          value={data.track1}
+          onChange={(v) => update('track1', v)}
           requiredMessage="트랙(단과대학)을 입력해주세요."
+        />
+
+        <TextField
+          title="2트랙 (복수/부전공, 없으면 직접 '없음'이라고 입력)"
+          value={data.track2}
+          onChange={(v) => update('track2', v)}
+          placeholder="없음"
+          requiredMessage="2트랙을 입력해주세요. 없으면 '없음'이라고 적어주세요."
         />
       </div>
 
@@ -135,9 +239,9 @@ export default function ApplyForm() {
       />
 
       <div className="flex flex-col gap-2.5 px-6 pt-[30px]">
-        <p className="text-[19px] font-extrabold text-white">지원 파트</p>
-        <RadioGroup options={PARTS} value={data.part} onChange={(v) => update('part', v)} bare />
-        <RequiredHint show={!data.part} message="지원 파트를 선택해주세요." />
+        <p className="text-[19px] font-extrabold text-white">지원 파트 (복수 선택 가능)</p>
+        <CheckboxGroup options={PARTS} value={data.part} onToggle={togglePart} />
+        <RequiredHint show={data.part.length === 0} message="지원 파트를 1개 이상 선택해주세요." />
       </div>
 
       <TextAreaField
@@ -277,11 +381,13 @@ function TextField({
   value,
   onChange,
   requiredMessage,
+  placeholder,
 }: {
   title: string;
   value: string;
   onChange: (v: string) => void;
-  requiredMessage: string;
+  requiredMessage?: string;
+  placeholder?: string;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -289,9 +395,10 @@ function TextField({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
         className="h-[38px] w-[200px] rounded-lg bg-[#d9d9d9] px-3 text-sm text-[#6d6d6d] outline-none"
       />
-      <RequiredHint show={!value} message={requiredMessage} />
+      {requiredMessage && <RequiredHint show={!value} message={requiredMessage} />}
     </div>
   );
 }
@@ -371,6 +478,42 @@ function RadioGroup<T extends string>({
         })}
       </div>
       {required && <RequiredHint show={!value} message={requiredMessage ?? ''} />}
+    </div>
+  );
+}
+
+// 지원 파트처럼 여러 개 동시 선택이 필요한 항목용 (백엔드가 part를 배열로 받음)
+function CheckboxGroup<T extends string>({
+  options,
+  value,
+  onToggle,
+}: {
+  options: T[];
+  value: T[];
+  onToggle: (v: T) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      {options.map((opt) => {
+        const selected = value.includes(opt);
+        return (
+          <button
+            type="button"
+            key={opt}
+            onClick={() => onToggle(opt)}
+            className="flex items-center gap-2.5 text-left"
+          >
+            <span
+              className={`grid h-[15px] w-[15px] flex-none place-items-center rounded-[4px] border-2 ${
+                selected ? 'border-white bg-white' : 'border-white/45'
+              }`}
+            >
+              {selected && <span className="h-1.5 w-1.5 rounded-[1px] bg-[#141416]" />}
+            </span>
+            <span className={`text-[13px] ${selected ? 'text-white/90' : 'text-white/70'}`}>{opt}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
