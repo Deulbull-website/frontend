@@ -1,8 +1,14 @@
 import HeroVideoModal from '../components/HeroVideoModal';
+import HeroCarousel from '../components/HeroCarousel';
 import About from './About';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/hs_deulbull/';
 const YOUTUBE_URL = 'https://www.youtube.com/@hs_Deulbull';
+
+const HERO_IMAGES = Array.from(
+  { length: 15 },
+  (_, i) => `/images/hero/hero-${i + 1}.jpg`,
+);
 
 export default function Home() {
   return (
@@ -11,12 +17,9 @@ export default function Home() {
       <HeroVideoModal videoSrc="/videos/hero-preview.mp4" />
 
       <section className="relative mx-auto h-[100dvh] max-h-[932px] w-full max-w-[430px] overflow-hidden bg-[#111]">
-        {/* 배경 사진 + 하단 그라데이션 */}
+        {/* 배경 사진 슬라이드 + 하단 그라데이션 */}
         <div className="absolute inset-x-0 bottom-[75px] top-0 bg-[#060608]">
-          {/* TODO: 실제 공연 사진으로 교체 */}
-          <div className="flex h-full w-full items-center justify-center text-white/30">
-            공연 사진
-          </div>
+          <HeroCarousel images={HERO_IMAGES} />
         </div>
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[420px]"
