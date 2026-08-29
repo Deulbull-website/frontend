@@ -6,10 +6,12 @@ import About from './About';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/hs_deulbull/';
 const YOUTUBE_URL = 'https://www.youtube.com/@hs_Deulbull';
+// 메뉴판 CONTACT와 동일한 카카오톡 오픈채팅 링크
+const CONTACT_URL = 'https://open.kakao.com/o/sAIy1UKi';
 
 const HERO_IMAGES = Array.from(
-  { length: 15 },
-  (_, i) => `/images/hero/hero-${i + 1}.jpg`,
+  { length: 14 },
+  (_, i) => `/images/hero/main${i + 1}.jpg`,
 );
 
 // 마우스 휠 한 칸(약 100px)만으로 바로 다음/이전 화면으로 넘어가지 않도록,
@@ -112,10 +114,22 @@ export default function Home() {
           <DotsPager total={HERO_IMAGES.length} active={heroIndex} />
         </div>
 
-        {/* 아래로 스크롤 유도 화살표 */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-[62px] flex justify-center animate-bounce text-white/70">
-          <ChevronDownIcon />
-        </div>
+        {/* 아래로 스크롤 유도 화살표 — 누르면 About으로 스크롤 이동 */}
+        <button
+          type="button"
+          aria-label="아래로 스크롤"
+          onClick={() => {
+            const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-snap-section]'));
+            const currentIndex = heroRef.current ? sections.indexOf(heroRef.current) : -1;
+            const next = currentIndex >= 0 ? sections[currentIndex + 1] : sections[1];
+            next?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="absolute inset-x-0 bottom-[62px] flex justify-center py-2 text-white/70"
+        >
+          <span className="animate-bounce">
+            <ChevronDownIcon />
+          </span>
+        </button>
 
         {/* 상단 SNS 아이콘 */}
         <div className="absolute left-6 right-6 top-6 flex justify-end gap-5 text-white">
@@ -125,7 +139,7 @@ export default function Home() {
           <a href={YOUTUBE_URL} target="_blank" rel="noreferrer" aria-label="YouTube">
             <YoutubeIcon />
           </a>
-          <a href="/contact" aria-label="문의">
+          <a href={CONTACT_URL} target="_blank" rel="noreferrer" aria-label="문의">
             <ContactIcon />
           </a>
         </div>

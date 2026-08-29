@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
+const CONTACT_URL = 'https://open.kakao.com/o/sAIy1UKi';
+
 const links = [
   { to: '/', label: 'HOME' },
-  { to: '/about', label: 'ABOUT' },
   { to: '/apply', label: 'APPLY' },
   { to: '/gallery', label: 'GALLERY' },
-  { to: '/contact', label: 'CONTACT' },
 ];
 
 export default function Nav() {
@@ -71,6 +71,14 @@ export default function Nav() {
               )}
             </NavLink>
           ))}
+          <a
+            href={CONTACT_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="relative text-[13px] font-semibold text-white/45"
+          >
+            CONTACT
+          </a>
         </nav>
       </div>
     </>

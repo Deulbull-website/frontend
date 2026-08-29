@@ -167,24 +167,33 @@ export default function ApplyForm() {
         </p>
       </div>
 
-      {/* 공연 사진 + 포스터 (디자인 수정본에서 새로 추가된 부분) */}
-      <div className="relative mt-[18px] h-[190px] overflow-hidden">
-        <div className="grid h-full w-full place-items-center bg-white/10 text-xs text-white/40">
-          공연 사진
-        </div>
+      {/* 공연 사진(확대·블러 처리) + 포스터(원본 비율 그대로) — 사이트 공통 좌우 여백(px-6, 24px)에 맞춤 */}
+      <div className="px-6 pt-[18px]">
         <div
-          className="pointer-events-none absolute inset-0"
+          className="relative h-[230px] w-full overflow-hidden rounded-[3px] bg-[#0a0a0c]"
           style={{
-            background:
-              'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
+            backgroundImage: 'url(/images/apply/apply_poster_bg_blur.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
-        />
-        <div className="absolute bottom-4 left-[22px] flex flex-col gap-1">
-          <p className="text-xs tracking-[0.14em] text-white/75">한성대학교 중앙노래패 들불</p>
-          <p className="text-[30px] font-black text-white">신입부원 모집</p>
-        </div>
-        <div className="absolute right-[18px] top-3.5 grid h-[150px] w-[104px] place-items-center bg-white/10 text-[10px] text-white/40">
-          포스터
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
+            }}
+          />
+          <div className="absolute bottom-4 left-[22px] flex flex-col gap-1">
+            <p className="text-xs tracking-[0.14em] text-white/75">한성대학교 중앙노래패 들불</p>
+            <p className="text-[30px] font-black text-white">신입부원 모집</p>
+          </div>
+          {/* 포스터 원본 비율 그대로(잘리거나 늘어나지 않게), 폭만 맞추고 높이는 자동 계산 — 하단이 '신입부원 모집' 문구 아래까지 닿도록 크게 */}
+          <img
+            src="/images/about/26-2_apply_poster.jpg"
+            alt="모집 포스터"
+            className="absolute right-[18px] top-3.5 h-auto w-[153px] rounded-[3px] shadow-[0_4px_14px_rgba(0,0,0,.45)]"
+          />
         </div>
       </div>
 
@@ -194,7 +203,7 @@ export default function ApplyForm() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-[50px] px-6 pt-7">
+      <div className="flex flex-col gap-[45px] px-6 pt-7">
         <RadioGroup
           title="2026 - 2 재학 상태"
           options={['재학', '휴학'] as EnrollStatus[]}
@@ -302,7 +311,7 @@ export default function ApplyForm() {
         showErrors={attemptedSubmit}
       />
 
-      <div className="flex flex-col gap-2.5 px-6 pt-[50px]">
+      <div className="flex flex-col gap-2.5 px-6 pt-[45px]">
         <p className="text-[19px] font-extrabold text-white">지원 파트</p>
         <CheckboxGroup options={PARTS} value={data.part} onToggle={togglePart} />
         <p className="text-[13px] leading-[1.6] text-white/62">* 복수 선택 가능</p>
@@ -310,7 +319,7 @@ export default function ApplyForm() {
       </div>
 
       <TextAreaField
-        className="px-6 pt-[50px]"
+        className="px-6 pt-[45px]"
         title="악기 경력"
         placeholder="자유롭게 작성해 주세요. ex) 없음 or 밴드부 1년, 기타 3년"
         value={data.experience}
@@ -320,7 +329,7 @@ export default function ApplyForm() {
         showErrors={attemptedSubmit}
       />
 
-      <div className="flex flex-col gap-2.5 px-6 pt-[50px]">
+      <div className="flex flex-col gap-2.5 px-6 pt-[45px]">
         <p className="text-[19px] font-extrabold text-white">튜터링 희망 여부</p>
         <RadioGroup
           options={['희망', '미희망'] as TutoringWish[]}
@@ -340,7 +349,7 @@ export default function ApplyForm() {
       </div>
 
       <TextAreaField
-        className="px-6 pt-[50px]"
+        className="px-6 pt-[45px]"
         title="좋아하는 장르, 노래, 아티스트"
         placeholder="자유롭게 작성해 주세요."
         value={data.favorites}
@@ -366,7 +375,7 @@ export default function ApplyForm() {
       </div>
 
       <TextAreaField
-        className="px-6 pt-[50px]"
+        className="px-6 pt-[45px]"
         title="마지막으로 하고 싶은 말"
         placeholder="자유롭게 작성해주세요. (최대 1000자)"
         value={data.lastWord}

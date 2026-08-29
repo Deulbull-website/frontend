@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDDay } from '../utils/dday';
+import Nav from '../components/Nav';
 
 // 모집 마감일: 2026-09-06. 날짜만 바뀌면 여기 한 곳만 수정하면 됩니다.
 const DEADLINE = new Date('2026-09-06T23:59:59');
+
+// 메뉴판 CONTACT와 동일한 카카오톡 오픈채팅 링크
+const CONTACT_URL = 'https://open.kakao.com/o/sAIy1UKi';
 
 export default function Apply() {
   const [dday, setDday] = useState(() => getDDay(DEADLINE));
@@ -16,6 +20,7 @@ export default function Apply() {
 
   return (
     <div className="mx-auto w-full max-w-[430px] bg-[#0a0a0c] text-white">
+      <Nav />
       <div className="px-6 pt-[22px]">
         <p className="font-['Bebas_Neue',_Impact,_sans-serif] text-[30px] tracking-[0.08em] text-white">
           JOIN US
@@ -29,14 +34,12 @@ export default function Apply() {
         <h1 className="text-[36px] font-black tracking-tight text-white">신입부원 모집</h1>
       </div>
 
-      <div className="grid grid-cols-[132px_1fr] items-start gap-[18px] px-6 pt-[26px]">
-        <div className="grid h-[186px] place-items-center bg-white/10 text-xs text-white/40">
-          모집 포스터
-        </div>
-        <div className="flex flex-col gap-3.5">
+      <div className="grid grid-cols-[152px_1fr] items-start gap-[18px] px-6 pt-[26px]">
+        {/* 포스터 원본 비율 그대로(잘리지 않게), 폭만 152px로 맞추고 높이는 자동 계산 */}
+        <img src="/images/about/26-2_apply_poster.jpg" alt="모집 포스터" className="h-auto w-[152px] rounded-[3px]" />
+        <div className="flex flex-col gap-4.5">
           <InfoRow title="신입부원 모집 기간" value="2026.08.31 ~ 2026.09.06" />
-          <InfoRow title="모집분야" value={<>보컬 · 기타 · 베이스 · 드럼 · 키보드<br />· 각 파트별 튜터링</>} />
-          <InfoRow title="오디션 일정" value="신입부원 모집 마감 후 카카오톡 개별 공지" />
+          <InfoRow title="모집분야" value={<>보컬 · 기타 · 베이스 · 드럼 · 키보드</>} />
           <InfoRow title="동아리 회비" value="35,000원" />
         </div>
       </div>
@@ -63,7 +66,9 @@ export default function Apply() {
         </div>
         <div className="flex gap-2.5">
           <a
-            href="/contact"
+            href={CONTACT_URL}
+            target="_blank"
+            rel="noreferrer"
             className="grid h-14 w-[58px] place-items-center rounded-2xl bg-white/10 text-white"
             aria-label="문의하기"
           >

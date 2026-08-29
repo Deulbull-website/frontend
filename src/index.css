@@ -23,3 +23,34 @@ body {
   background: #0a0a0c;
   color: #fff;
 }
+
+/* 본문(About·Poster·Location·Contact) 배경의 은은한 빛 덩어리가 살짝 숨쉬듯
+   깜빡이는 효과 — 원본 시안(개발 전달용 HTML)에 정의된 것과 동일합니다. */
+@keyframes emberPulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 재/먼지 입자가 아래에서 위로 천천히 떠오르며 사라지는 효과 —
+   원본 시안(개발 전달용 HTML)에 정의된 것과 동일한 값입니다. */
+@keyframes ashRise {
+  0% {
+    transform: translate3d(0, 40px, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(26px, -420px, 0) scale(0.55);
+    opacity: 0;
+  }
+}

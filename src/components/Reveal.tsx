@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
 /**
  * 스크롤에 맞춰 아래에서 위로 살짝 올라오며 나타나는 애니메이션 래퍼.
@@ -8,10 +8,12 @@ export default function Reveal({
   children,
   className = '',
   delay = 0,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
+  style?: CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -38,7 +40,7 @@ export default function Reveal({
       className={`transition-all duration-700 ease-out ${
         visible ? 'translate-y-0 opacity-100' : 'translate-y-9 opacity-0'
       } ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{ ...style, transitionDelay: `${delay}ms` }}
     >
       {children}
     </div>
