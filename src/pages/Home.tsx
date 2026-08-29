@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import HeroVideoModal from '../components/HeroVideoModal';
 import About from './About';
 
@@ -6,12 +5,10 @@ const INSTAGRAM_URL = 'https://www.instagram.com/hs_deulbull/';
 const YOUTUBE_URL = 'https://www.youtube.com/@hs_Deulbull';
 
 export default function Home() {
-  // 영상 파일 준비되면 이 경로만 실제 파일로 교체하면 됩니다.
-  const [showVideo, setShowVideo] = useState(true);
-
   return (
     <>
-      {showVideo && <HeroVideoModal videoSrc="/videos/hero-preview.mp4" />}
+      {/* 영상 파일 준비되면 이 경로만 실제 파일로 교체하면 됩니다. */}
+      <HeroVideoModal videoSrc="/videos/hero-preview.mp4" />
 
       <section className="relative mx-auto h-[100dvh] max-h-[932px] w-full max-w-[430px] overflow-hidden bg-[#111]">
         {/* 배경 사진 + 하단 그라데이션 */}
