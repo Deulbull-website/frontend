@@ -65,17 +65,18 @@ export default function About() {
             className="text-left text-sm leading-[2] tracking-[-0.2px] text-white/86"
             style={{ textWrap: 'pretty' }}
           >
-            매 학기 신입 부원을 모집하며, 80명 이상의 부원들이 활동하고 있어 다양한 장르를 넘나드는 다채로운 무대를
-            완성합니다.
+            매 학기 신입 부원을 모집하며, 80명 이상의 부원들이 활동하고
+            <br />
+            있어 다양한 장르를 넘나드는 다채로운 무대를 완성합니다.
           </p>
           <p
             className="text-left text-sm leading-[2] tracking-[-0.2px] text-white/86"
             style={{ textWrap: 'pretty' }}
           >
             <strong className="font-bold">들불</strong>에서는 누구나 무대의 주인공이 될 수 있습니다. 모든 부원에게
-            매 학기 최소 한 곡 이상의 공연 기회를 보장하며, 튜터링을 통해 악기를 처음 접하는 분들도 매번 멋진
-            무대를 만들어가고 있습니다. <strong className="font-bold">들불</strong>에서 여러분의 멋진 무대를
-            기다리고 있겠습니다!
+            최소 한 곡 이상의 공연 기회를 보장하며, 악기를 처음 접하는 분들도 튜터링을 통해 무대에 오를 수 있도록 도와드리고 있습니다.
+            <br />
+            <strong className="font-bold">들불</strong>에서 여러분의 멋진 무대를 기다리고 있겠습니다!
           </p>
         </Reveal>
 
