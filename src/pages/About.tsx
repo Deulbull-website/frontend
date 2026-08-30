@@ -89,8 +89,7 @@ export default function About() {
               className="h-28 w-full rounded-[3px] object-cover"
             />
             <p className="text-[13.5px] leading-[1.8] text-white/84">
-              학기마다 정기공연과 연합공연을 직접 주최하며, 대동제·체육대회·버스킹 등 다양한 교내 행사에도
-              적극적으로 참여하고 있습니다.
+              학기마다 정기공연과 연합공연을 직접 주최하며, 대동제·버스킹 등 교내 행사에도 참여하고 있습니다.
             </p>
           </Reveal>
           <Reveal className="grid grid-cols-[150px_1fr] items-center gap-[18px]" delay={280}>
@@ -100,7 +99,7 @@ export default function About() {
               className="h-28 w-full rounded-[3px] object-cover"
             />
             <p className="text-[13.5px] leading-[1.8] text-white/84">
-              공연 외에도 다양한 소모임, MT, 개강파티 등 다채로운 활동을 함께하고 있습니다.
+              공연뿐만 아니라 소모임, MT, 개강파티 등 다양한 활동을 함께하며 소소한 추억을 쌓아갑니다.
             </p>
           </Reveal>
         </div>
