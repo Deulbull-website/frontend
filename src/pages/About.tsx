@@ -74,7 +74,8 @@ export default function About() {
             style={{ textWrap: 'pretty' }}
           >
             <strong className="font-bold">들불</strong>에서는 누구나 무대의 주인공이 될 수 있습니다. 모든 부원에게
-            최소 한 곡 이상의 공연 기회를 보장하며, 악기를 처음 접하는 분들도 튜터링을 통해 무대에 오를 수 있도록 도와드리고 있습니다.
+            최소 한 곡 이상의 공연 기회를 보장하며, 악기를 처음 접하는
+            분도 튜터링을 통해 무대에 오를 수 있도록 도와드리고 있습니다.
             <br />
             <strong className="font-bold">들불</strong>에서 여러분의 멋진 무대를 기다리고 있겠습니다!
           </p>
@@ -89,7 +90,7 @@ export default function About() {
               className="h-28 w-full rounded-[3px] object-cover"
             />
             <p className="text-[13.5px] leading-[1.8] text-white/84">
-              학기마다 정기공연과 연합공연을 직접 주최하며, 대동제·버스킹 등 교내 행사에도 참여하고 있습니다.
+              학기마다 정기공연·연합공연을 직접 주최하며, 대동제·버스킹 등 다양한 교내 행사에도 참여하고 있습니다.
             </p>
           </Reveal>
           <Reveal delay={280} className="grid grid-cols-[150px_1fr] items-center gap-[18px]">
@@ -99,7 +100,7 @@ export default function About() {
               className="h-28 w-full rounded-[3px] object-cover"
             />
             <p className="text-[13.5px] leading-[1.8] text-white/84">
-              공연뿐만 아니라 소모임, MT, 개강파티 등 다양한 활동을 함께하며 소소한 추억도 쌓아가고 있습니다.
+              공연뿐만 아니라 다양한 소모임, MT, 개강파티 등 여러 활동을 함께하며 <br/>소소한 추억도 쌓아가고 있습니다.
             </p>
           </Reveal>
         </div>

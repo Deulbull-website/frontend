@@ -105,7 +105,7 @@ export default function Home() {
         </div>
 
         {/* 아래로 스크롤 유도 화살표 — 누르면 About으로 스크롤 이동. 화면에서 제일 아래에 있으니 제일 마지막에 등장 */}
-        <Reveal delay={520} className="absolute inset-x-0 bottom-[32px] flex justify-center">
+        <Reveal delay={520} className="absolute inset-x-0 bottom-[29px] flex justify-center">
           <button
             type="button"
             aria-label="아래로 스크롤"
