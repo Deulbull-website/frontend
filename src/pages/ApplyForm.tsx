@@ -1,4 +1,5 @@
 import { Fragment, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // 실제 배포된 백엔드 주소. Vercel 환경변수 VITE_API_BASE_URL을 설정하면 그 값이 우선 적용되고,
 // 안 설정했을 때는 지금 쓰고 있는 nip.io 주소로 동작합니다.
@@ -89,6 +90,7 @@ function isFormComplete(data: ApplyFormData) {
 }
 
 export default function ApplyForm() {
+  const navigate = useNavigate();
   const [data, setData] = useState<ApplyFormData>(initialData);
   const [submitting, setSubmitting] = useState(false);
   // 제출 버튼을 한 번이라도 눌러보기 전까지는 필수 항목 안내(빨간 글씨)를 숨겨둡니다.
@@ -153,6 +155,8 @@ export default function ApplyForm() {
         alert('들불에 지원해주셔서 감사합니다. 원하시는 좋은 결과가 있으시길 진심으로 응원합니다!');
         setData(initialData);
         setAttemptedSubmit(false);
+        // 제출이 정상적으로 끝나면 지원 안내(apply) 화면으로 돌아감
+        navigate('/apply');
       } else if (res.status === 400) {
         const err = await res.json().catch(() => null);
         alert(`입력값을 다시 확인해주세요.${err?.message ? `\n(${err.message})` : ''}`);
