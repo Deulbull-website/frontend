@@ -74,7 +74,7 @@ export default function About() {
           >
             <strong className="font-bold">들불</strong>에서는 누구나 무대의 주인공이 될 수 있습니다. 모든 부원에게
             매 학기 최소 한 곡 이상의 공연 기회를 보장하며, 튜터링을 통해 악기를 처음 접하는 분들도 매번 멋진
-            무대를 만들어가고 있습니다. <strong className="font-bold">들불</strong>에서 여러분의 멋진 첫 무대를
+            무대를 만들어가고 있습니다. <strong className="font-bold">들불</strong>에서 여러분의 멋진 무대를
             기다리고 있겠습니다!
           </p>
         </Reveal>
