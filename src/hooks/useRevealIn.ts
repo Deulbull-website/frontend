@@ -11,6 +11,9 @@ export default function useRevealIn<T extends HTMLElement = HTMLElement>() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // rootMargin 아래쪽을 미리 넉넉하게 잡아서 실제로 화면에 보이기 전에 애니메이션을
+    // 끝내 둠 — 스크롤 중에 큰 섹션이 슬라이드+페이드 되는 게 버벅임(따닥따닥)으로 느껴지는
+    // 문제를 줄이기 위함
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -18,7 +21,7 @@ export default function useRevealIn<T extends HTMLElement = HTMLElement>() {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0, rootMargin: '0px 0px 150px 0px' },
     );
     observer.observe(el);
     return () => observer.disconnect();

@@ -47,18 +47,21 @@ function randomBorderRadius(seed: number) {
 // 구간(ABOUT / POSTER / LOCATION / Contact us)별로 재 밀도를 다르게 주기 위한 밴드.
 // AshBackground는 About.tsx 전체(모든 섹션이 세로로 이어붙은 카드) 위에 한 번만
 // 깔리므로, top(%) 범위를 각 섹션이 대략 위치하는 구간에 맞춰 나눕니다.
+// 입자 개수를 한 번 크게 늘렸더니 본문(About) 스크롤이 버벅이는(따닥따닥 끊기는) 문제가
+// 생겨서(blur 필터가 걸린 요소가 350개 이상이라 스크롤 중 다시 그리는 비용이 컸음),
+// 개수를 다시 줄이고 재가루는 blur 자체를 없애서 가볍게 만듦
 const ASH_BANDS = [
-  { top: [0, 30] as const, count: 52 }, // ABOUT
-  { top: [30, 54] as const, count: 26 }, // POSTER
-  { top: [54, 80] as const, count: 46 }, // LOCATION
-  { top: [80, 100] as const, count: 32 }, // Contact us
+  { top: [0, 30] as const, count: 41 }, // ABOUT
+  { top: [30, 54] as const, count: 20 }, // POSTER
+  { top: [54, 80] as const, count: 36 }, // LOCATION
+  { top: [80, 100] as const, count: 24 }, // Contact us
 ];
 
 const POWDER_BANDS = [
-  { top: [0, 30] as const, count: 70 },
-  { top: [30, 54] as const, count: 34 },
-  { top: [54, 80] as const, count: 62 },
-  { top: [80, 100] as const, count: 40 },
+  { top: [0, 30] as const, count: 36 },
+  { top: [30, 54] as const, count: 18 },
+  { top: [54, 80] as const, count: 31 },
+  { top: [80, 100] as const, count: 20 },
 ];
 
 function buildAshParticles() {
@@ -99,7 +102,6 @@ function buildPowderParticles() {
     h: number;
     rotate: number;
     radius: string;
-    blur: number;
     color: string;
   }[] = [];
   let i = 0;
@@ -109,14 +111,15 @@ function buildPowderParticles() {
       const left = rand(seed * 1.3, 0, 100);
       const top = rand(seed * 2.9, band.top[0], band.top[1]);
       const w = rand(seed * 3.3, 1, 3);
-      // 재가루도 재 조각과 마찬가지로 완전한 원이 아니라 살짝 찌그러진 블롭 모양으로
+      // 재가루도 재 조각과 마찬가지로 완전한 원이 아니라 살짝 찌그러진 블롭 모양으로.
+      // (blur는 일부러 안 씀 — 크기가 1~3px라 흐림 효과가 잘 보이지도 않는데, blur 필터가
+      // 걸린 요소 수가 많아지면 스크롤 시 다시 그리는 비용이 커져서 버벅임의 원인이 됨)
       const h = w * rand(seed * 5.7, 0.5, 1);
       const rotate = rand(seed * 8.2, -90, 90);
       const radius = randomBorderRadius(seed * 4.9 + 3);
-      const blur = rand(seed * 4.4, 0.2, 0.8);
       const alpha = rand(seed * 6.1, POWDER_COLOR.alphaMin, POWDER_COLOR.alphaMax);
       const color = `rgba(${POWDER_COLOR.r},${POWDER_COLOR.g},${POWDER_COLOR.b},${alpha.toFixed(2)})`;
-      list.push({ left, top, w, h, rotate, radius, blur, color });
+      list.push({ left, top, w, h, rotate, radius, color });
       i += 1;
     }
   });
@@ -142,11 +145,8 @@ const glowBlobs = [
 export default function AshBackground() {
   return (
     <>
-      {/* 1) 은은하게 숨쉬는 주황/붉은 빛 덩어리 */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-        style={{ animation: 'emberPulse 6s ease-in-out infinite' }}
-      >
+      {/* 1) 주황/붉은 빛 덩어리 — 숨쉬듯 깜빡이던 emberPulse 애니메이션은 제거하고 고정 */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         {glowBlobs.map((b, i) => (
           <span
             key={i}
@@ -175,8 +175,14 @@ export default function AshBackground() {
         }}
       />
 
-      {/* 3) 회백색 재 조각 + 재가루 — 애니메이션 없이 고정된 채로 흩뿌려져 있음 */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {/* 3) 회백색 재 조각 + 재가루 — 애니메이션 없이 고정된 채로 흩뿌려져 있음.
+          will-change: transform으로 이 레이어를 한 번만 별도 컴포지팅 레이어로 승격시켜서,
+          스크롤할 때마다 blur 필터가 걸린 요소들을 다시 그리지 않고 그대로 이동만 하게 함
+          (스크롤 버벅임 완화) */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+        style={{ willChange: 'transform' }}
+      >
         {particles.map((p, i) => (
           <span
             key={`ash-${i}`}
@@ -205,7 +211,6 @@ export default function AshBackground() {
               transform: `rotate(${p.rotate}deg)`,
               background: p.color,
               borderRadius: p.radius,
-              filter: `blur(${p.blur}px)`,
             }}
           />
         ))}

@@ -13,10 +13,10 @@ body,
   min-height: 100%;
 }
 
-/* 메인 화면에서 살짝만 스크롤해도 ABOUT 화면으로 완전히 넘어가도록 하는 스크롤 스냅 */
-html {
-  scroll-snap-type: y mandatory;
-}
+/* 예전엔 여기에 scroll-snap-type: y proximity를 걸어서 히어로→ABOUT 전환을 매끄럽게
+   했는데, About 블록이 화면 여러 개 분량으로 매우 길어서 스크롤하는 내내 브라우저가
+   스냅 위치를 계속 재계산하며 따닥따닥 튀는 현상이 있었음. 원인을 완전히 없애기 위해
+   scroll-snap을 아예 걷어내고 일반적인 자유 스크롤로 전환함 */
 
 body {
   font-family: 'Noto Sans KR', system-ui, sans-serif;
