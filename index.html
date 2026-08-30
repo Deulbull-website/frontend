@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 화면 폭을 브라우저 실제 폭(device-width) 대신 디자인 기준 폭(430)으로 고정함.
+         카드형/모바일 초대장 사이트에서 흔히 쓰는 방식으로, 브라우저가 페이지 전체를
+         통째로 축소·확대해서 화면에 맞춰주기 때문에 폰 기종(360px~430px 등)에 상관없이
+         본문 줄바꿈·문단 구성이 항상 동일하게 나옴. initial-scale을 따로 지정하지 않아야
+         브라우저가 실제 화면 폭에 맞는 배율을 자동으로 계산함 -->
+    <meta name="viewport" content="width=430" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
