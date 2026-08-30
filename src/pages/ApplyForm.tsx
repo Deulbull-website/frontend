@@ -191,32 +191,37 @@ export default function ApplyForm() {
                 'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
             }}
           />
-          {/* 포스터 폭(24vw 기준)에 맞춰 텍스트 영역 폭과 글자 크기도 함께 줄어들도록(clamp)
-              해서, 화면이 좁은 기기에서도 포스터와 겹치지 않으면서 두 줄 다 한 줄로 표시됨 */}
+          {/* 글씨 크기를 줄여서 텍스트가 차지하는 폭을 줄이고, 그만큼 포스터를 더 키움
+              (포스터 폭(34vw 기준, 아래 포스터와 동일한 비율)에 맞춰 텍스트 영역 폭과 글자
+              크기도 함께 줄어들도록 clamp) */}
           <div
             className="absolute bottom-4 left-[22px] flex flex-col gap-1"
-            style={{ right: 'clamp(112px, calc(24vw + 28px), 179px)' }}
+            style={{ right: 'clamp(94px, calc(34vw + 24px), 172px)' }}
           >
             <p
               className="whitespace-nowrap tracking-[0.14em] text-white/75"
-              style={{ fontSize: 'clamp(9.5px, 3vw, 12px)' }}
+              style={{ fontSize: 'clamp(8px, 2.4vw, 10px)' }}
             >
               한성대학교 중앙노래패 들불
             </p>
             <p
               className="whitespace-nowrap font-black leading-[1.1] text-white"
-              style={{ fontSize: 'clamp(21px, 7vw, 30px)' }}
+              style={{ fontSize: 'clamp(17px, 5.6vw, 24px)' }}
             >
               신입부원 모집
             </p>
           </div>
-          {/* 포스터 원본 비율 그대로(잘리거나 늘어나지 않게) — 폭을 뷰포트에 비례(clamp)하게 줄여
-              좁은 화면에서도 왼쪽 텍스트 한 줄과 겹치지 않도록 함 */}
+          {/* 포스터 — 폭을 34vw 기준으로 키우고 4:3(세로가 긴) 비율을 유지한 채 높이를
+              폭에 비례해서 자동으로 늘려, "신입부원 모집" 글씨 높이까지 자연스럽게 내려오도록 함.
+              (이전엔 top/bottom을 고정해서 상자 바닥까지 억지로 늘렸더니 PC처럼 넓은 화면에서
+              너무 길어 보이는 문제가 있었음 — 이제는 폭에 맞춰 비율대로만 늘어나서 화면 크기가
+              달라져도 항상 자연스러운 비율 유지). 폭의 최댓값(146px)은 앱 기준 최대 화면
+              폭(430px)에서 계산한 값이라 그보다 넓은 PC 브라우저 창에서도 더 커지지 않음 */}
           <img
             src="/images/about/26-2_apply_poster.jpg"
             alt="모집 포스터"
-            className="absolute right-[18px] top-3.5 h-auto rounded-[3px] shadow-[0_4px_14px_rgba(0,0,0,.45)]"
-            style={{ width: 'clamp(84px, 24vw, 153px)' }}
+            className="absolute right-[18px] top-3.5 rounded-[3px] object-cover shadow-[0_4px_14px_rgba(0,0,0,.45)]"
+            style={{ width: 'clamp(92px, 34vw, 146px)', aspectRatio: '3 / 4' }}
           />
         </div>
       </div>

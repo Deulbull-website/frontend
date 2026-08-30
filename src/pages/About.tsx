@@ -66,29 +66,34 @@ export default function About() {
             음악을 선보이는 동아리입니다.
           </p>
           <p className="text-sm leading-[1.85] text-white/86">
-            매 학기 신입 부원을 모집하며, 80여 명의 부원들이 활동하고 있어 다양한 장르를 넘나드는 다채로운 무대를
+            매 학기 신입 부원을 모집하며, 80명 이상의 부원들이 활동하고 있어 다양한 장르를 넘나드는 다채로운 무대를
             완성합니다.
           </p>
           <p className="text-sm leading-[1.85] text-white/86">
-            모든 부원에게 한 학기당 최소 한 곡 이상의 공연 기회를 드리고 있습니다. 경험이 없어도 괜찮습니다.
-            튜터링도 진행하고 있으니 음악을 향한 뜨거운 열정만 있다면 누구나 들불의 주인공이 될 수 있습니다!
+            <strong className="font-bold">들불</strong>에서는 누구나 무대의 주인공이 될 수 있습니다.
+            <br />
+            모든 부원에게 매 학기 최소 한 곡 이상의 공연 기회를 보장하며, 튜터링을 통해 악기를 처음 접하는
+            분들도 매번 멋진 무대를 만들어가고 있습니다.
+          </p>
+          <p className="text-sm leading-[1.85] text-white/86">
+            <strong className="font-bold">들불</strong>에서 여러분의 빛나는 첫 무대를 기다리고 있습니다!
           </p>
         </Reveal>
 
         {/* 활동 소개 2단 */}
         <div className="flex flex-col gap-5 px-[26px] pt-[34px]">
-          <Reveal className="grid grid-cols-[150px_1fr] items-start gap-[18px]" delay={220}>
+          <Reveal className="grid grid-cols-[150px_1fr] items-center gap-[18px]" delay={220}>
             <img
               src="/images/about/regular_concert.jpg"
               alt="정기공연"
               className="h-28 w-full rounded-[3px] object-cover"
             />
             <p className="text-[13.5px] leading-[1.8] text-white/84">
-              학기당 한 번 정기공연과 연합공연을 직접 주최하며, 대동제·체육대회·버스킹 등 다양한 교내 행사에도
+              학기마다 정기공연과 연합공연을 직접 주최하며, 대동제·체육대회·버스킹 등 다양한 교내 행사에도
               적극적으로 참여하고 있습니다.
             </p>
           </Reveal>
-          <Reveal className="grid grid-cols-[150px_1fr] items-start gap-[18px]" delay={280}>
+          <Reveal className="grid grid-cols-[150px_1fr] items-center gap-[18px]" delay={280}>
             <img
               src="/images/about/home_mt.jpg"
               alt="MT / 소모임"
@@ -113,8 +118,9 @@ export default function About() {
             POSTER
           </p>
         </Reveal>
-        <Reveal className="px-6 pt-[22px]" delay={100}>
-          {/* 포스터 원본 비율 그대로(잘리지 않게), 폭만 310px로 맞추고 높이는 자동 계산 */}
+        <Reveal className="flex justify-center px-6 pt-[22px]" delay={100}>
+          {/* 포스터 원본 비율 그대로(잘리지 않게), 폭만 310px로 맞추고 높이는 자동 계산.
+              부모를 flex justify-center로 감싸서 가운데 정렬 */}
           <img
             src="/images/about/26-2_apply_poster.jpg"
             alt="모집 포스터"

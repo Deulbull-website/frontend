@@ -27,14 +27,14 @@ export default function Apply() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-1.5 px-6 pt-[26px]">
+      <div className="flex flex-col gap-0 px-6 pt-[21px]">
         <p className="text-[13px] font-light tracking-[0.14em] text-white/60">
           한성대학교 중앙노래패 들불
         </p>
-        <h1 className="text-[36px] font-black tracking-tight text-white">신입부원 모집</h1>
+        <h1 className="-mt-1.5 text-[36px] font-black tracking-tight text-white">신입부원 모집</h1>
       </div>
 
-      <div className="grid grid-cols-[152px_1fr] items-start gap-[18px] px-6 pt-[26px]">
+      <div className="grid grid-cols-[152px_1fr] items-center gap-[18px] px-6 pt-[20px]">
         {/* 포스터 원본 비율 그대로(잘리지 않게), 폭만 152px로 맞추고 높이는 자동 계산 */}
         <img src="/images/about/26-2_apply_poster.jpg" alt="모집 포스터" className="h-auto w-[152px] rounded-[3px]" />
         <div className="flex flex-col gap-4.5">

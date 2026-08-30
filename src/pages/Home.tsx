@@ -9,10 +9,10 @@ const YOUTUBE_URL = 'https://www.youtube.com/@hs_Deulbull';
 // 메뉴판 CONTACT와 동일한 카카오톡 오픈채팅 링크
 const CONTACT_URL = 'https://open.kakao.com/o/sAIy1UKi';
 
-const HERO_IMAGES = Array.from(
-  { length: 14 },
-  (_, i) => `/images/hero/main${i + 1}.jpg`,
-);
+// main3은 메인 화면 슬라이드에서 제외
+const HERO_IMAGES = Array.from({ length: 14 }, (_, i) => i + 1)
+  .filter((n) => n !== 3)
+  .map((n) => `/images/hero/main${n}.jpg`);
 
 export default function Home() {
   const [heroIndex, setHeroIndex] = useState(0);
