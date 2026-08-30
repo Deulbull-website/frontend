@@ -182,8 +182,11 @@ export default function About() {
               backgroundImage:
                 'linear-gradient(#08080a, #08080a), url(/images/home_people.png), linear-gradient(180deg, rgba(10,10,12,0) 0%, rgba(52,22,10,.6) 30%, rgba(140,66,32,.7) 62%, rgba(198,110,62,.62) 100%)',
               backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
+              // 검정 바닥띠를 사진보다 살짝 더 크게(60→68px) 겹쳐서, 모바일에서 서브픽셀
+              // 반올림 오차로 사진과 바닥띠 사이에 1px짜리 빈틈(그 아래 그라데이션 색이 비치는
+              // 빨간/주황 실선)이 생기지 않도록 함
               backgroundPosition: 'center bottom, center bottom 60px, center bottom',
-              backgroundSize: '100% 60px, 100% auto, 100% 100%',
+              backgroundSize: '100% 68px, 100% auto, 100% 100%',
             }}
           />
 

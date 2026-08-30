@@ -83,7 +83,6 @@ function isFormComplete(data: ApplyFormData) {
     data.experience.trim() !== '' &&
     data.tutoringWish !== null &&
     data.favorites.trim() !== '' &&
-    data.lastWord.trim() !== '' &&
     data.agreePrivacy &&
     data.agreeNoEdit
   );
@@ -107,6 +106,14 @@ export default function ApplyForm() {
 
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
+
+    // 전화번호는 010-0000-0000처럼 3자리-4자리-4자리로 정확히 입력됐는지 확인
+    const [phone1, phone2, phone3] = data.phone;
+    const isPhoneValid = phone1.length === 3 && phone2.length === 4 && phone3.length === 4;
+    if (!isPhoneValid) {
+      alert('전화번호를 다시 확인해주세요. (010-0000-0000처럼 3자리-4자리-4자리로 입력해주세요)');
+      return;
+    }
 
     if (!data.agreePrivacy || !data.agreeNoEdit) {
       alert('필수 동의 항목을 확인해주세요.');
@@ -184,17 +191,32 @@ export default function ApplyForm() {
                 'linear-gradient(0deg, rgba(6,6,8,.92) 0%, rgba(6,6,8,.5) 42%, rgba(6,6,8,.15) 100%)',
             }}
           />
-          {/* right-[180px]로 폭을 제한해, 화면이 좁은 기기에서도 포스터 이미지 아래로 텍스트가
-              깔리지 않고 줄바꿈되도록 함 (포스터: right-18px + width 153px = 171px) */}
-          <div className="absolute bottom-4 left-[22px] right-[180px] flex flex-col gap-1">
-            <p className="text-xs tracking-[0.14em] text-white/75">한성대학교 중앙노래패 들불</p>
-            <p className="text-[30px] font-black leading-[1.1] text-white">신입부원 모집</p>
+          {/* 포스터 폭(24vw 기준)에 맞춰 텍스트 영역 폭과 글자 크기도 함께 줄어들도록(clamp)
+              해서, 화면이 좁은 기기에서도 포스터와 겹치지 않으면서 두 줄 다 한 줄로 표시됨 */}
+          <div
+            className="absolute bottom-4 left-[22px] flex flex-col gap-1"
+            style={{ right: 'clamp(112px, calc(24vw + 28px), 179px)' }}
+          >
+            <p
+              className="whitespace-nowrap tracking-[0.14em] text-white/75"
+              style={{ fontSize: 'clamp(9.5px, 3vw, 12px)' }}
+            >
+              한성대학교 중앙노래패 들불
+            </p>
+            <p
+              className="whitespace-nowrap font-black leading-[1.1] text-white"
+              style={{ fontSize: 'clamp(21px, 7vw, 30px)' }}
+            >
+              신입부원 모집
+            </p>
           </div>
-          {/* 포스터 원본 비율 그대로(잘리거나 늘어나지 않게), 폭만 맞추고 높이는 자동 계산 — 하단이 '신입부원 모집' 문구 아래까지 닿도록 크게 */}
+          {/* 포스터 원본 비율 그대로(잘리거나 늘어나지 않게) — 폭을 뷰포트에 비례(clamp)하게 줄여
+              좁은 화면에서도 왼쪽 텍스트 한 줄과 겹치지 않도록 함 */}
           <img
             src="/images/about/26-2_apply_poster.jpg"
             alt="모집 포스터"
-            className="absolute right-[18px] top-3.5 h-auto w-[153px] rounded-[3px] shadow-[0_4px_14px_rgba(0,0,0,.45)]"
+            className="absolute right-[18px] top-3.5 h-auto rounded-[3px] shadow-[0_4px_14px_rgba(0,0,0,.45)]"
+            style={{ width: 'clamp(84px, 24vw, 153px)' }}
           />
         </div>
       </div>
@@ -207,7 +229,7 @@ export default function ApplyForm() {
 
       <div className="flex flex-col gap-[45px] px-6 pt-7">
         <RadioGroup
-          title="2026 - 2 재학 상태"
+          title="2026 - 2 재학 상태*"
           options={['재학', '휴학'] as EnrollStatus[]}
           value={data.enrollStatus}
           onChange={(v) => update('enrollStatus', v)}
@@ -217,7 +239,7 @@ export default function ApplyForm() {
         />
 
         <TextField
-          title="이름"
+          title="이름*"
           value={data.name}
           onChange={(v) => update('name', v)}
           placeholder="김들불"
@@ -227,7 +249,9 @@ export default function ApplyForm() {
         />
 
         <div className="flex flex-col gap-2.5">
-          <p className="text-[19px] font-extrabold text-white">전화번호</p>
+          <p className="text-[19px] font-extrabold text-white">
+            <TitleText text="전화번호*" />
+          </p>
           <div className="flex items-center gap-2">
             {data.phone.map((part, i) => (
               <Fragment key={i}>
@@ -240,6 +264,8 @@ export default function ApplyForm() {
                     update('phone', next);
                   }}
                   maxLength={i === 0 ? 3 : 4}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className={`h-[38px] rounded-lg bg-[#d9d9d9] text-center text-[15px] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100 ${
                     i === 0 ? 'w-[66px]' : 'w-[71px]'
                   }`}
@@ -252,7 +278,7 @@ export default function ApplyForm() {
         </div>
 
         <TextField
-          title="학번"
+          title="학번*"
           value={data.studentId}
           onChange={(v) => update('studentId', v.replace(/\D/g, '').slice(0, 7))}
           placeholder="2612345"
@@ -260,10 +286,11 @@ export default function ApplyForm() {
           showErrors={attemptedSubmit}
           widthClass="w-[90px]"
           center
+          numeric
         />
 
         <RadioGroup
-          title="학년"
+          title="학년*"
           options={GRADES}
           value={data.grade}
           onChange={(v) => update('grade', v)}
@@ -273,7 +300,7 @@ export default function ApplyForm() {
         />
 
         <TextField
-          title="1트랙"
+          title="1트랙*"
           value={data.track1}
           onChange={(v) => update('track1', v.slice(0, 15))}
           placeholder="부동산트랙"
@@ -288,7 +315,7 @@ export default function ApplyForm() {
         />
 
         <TextField
-          title="2트랙"
+          title="2트랙*"
           value={data.track2}
           onChange={(v) => update('track2', v.slice(0, 15))}
           placeholder="없음"
@@ -303,7 +330,7 @@ export default function ApplyForm() {
 
       <TextAreaField
         className="px-6 pt-[39px]"
-        title="지원 동기"
+        title="지원 동기*"
         placeholder="자유롭게 작성해주세요. (최대 1000자)"
         value={data.motivation}
         onChange={(v) => update('motivation', v)}
@@ -314,7 +341,9 @@ export default function ApplyForm() {
       />
 
       <div className="flex flex-col gap-2.5 px-6 pt-[45px]">
-        <p className="text-[19px] font-extrabold text-white">지원 파트</p>
+        <p className="text-[19px] font-extrabold text-white">
+          <TitleText text="지원 파트*" />
+        </p>
         <CheckboxGroup options={PARTS} value={data.part} onToggle={togglePart} />
         <p className="text-[13px] leading-[1.6] text-white/62">* 복수 선택 가능</p>
         <RequiredHint show={attemptedSubmit && data.part.length === 0} message="지원 파트를 1개 이상 선택해주세요." />
@@ -322,7 +351,7 @@ export default function ApplyForm() {
 
       <TextAreaField
         className="px-6 pt-[45px]"
-        title="악기 경력"
+        title="악기 경력*"
         placeholder="자유롭게 작성해 주세요. ex) 없음 or 밴드부 1년, 기타 3년"
         value={data.experience}
         onChange={(v) => update('experience', v)}
@@ -332,7 +361,9 @@ export default function ApplyForm() {
       />
 
       <div className="flex flex-col gap-2.5 px-6 pt-[45px]">
-        <p className="text-[19px] font-extrabold text-white">튜터링 희망 여부</p>
+        <p className="text-[19px] font-extrabold text-white">
+          <TitleText text="튜터링 희망 여부*" />
+        </p>
         <RadioGroup
           options={['희망', '미희망'] as TutoringWish[]}
           value={data.tutoringWish}
@@ -352,7 +383,7 @@ export default function ApplyForm() {
 
       <TextAreaField
         className="px-6 pt-[45px]"
-        title="좋아하는 장르, 노래, 아티스트"
+        title="좋아하는 장르, 노래, 아티스트*"
         placeholder="자유롭게 작성해 주세요."
         value={data.favorites}
         onChange={(v) => update('favorites', v)}
@@ -384,8 +415,6 @@ export default function ApplyForm() {
         onChange={(v) => update('lastWord', v)}
         maxLength={1000}
         height={230}
-        requiredMessage="마지막으로 하고 싶은 말을 입력해주세요."
-        showErrors={attemptedSubmit}
       />
 
       <div className="mx-6 mt-[64px] h-px bg-white/18" />
@@ -451,6 +480,17 @@ export default function ApplyForm() {
   );
 }
 
+// 필수 항목 제목 뒤의 '*' 표시를 본문 글자보다 작게 렌더링
+function TitleText({ text }: { text: string }) {
+  if (!text.endsWith('*')) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, -1)}
+      <span className="ml-0.5 align-top text-[10px] text-[#e2564a]">*</span>
+    </>
+  );
+}
+
 function RequiredHint({ show, message }: { show: boolean; message: string }) {
   if (!show) return null;
   return <p className="text-[11px] text-[#e2564a]">* {message}</p>;
@@ -466,6 +506,7 @@ function TextField({
   hint,
   widthClass = 'w-full',
   center,
+  numeric,
 }: {
   title: string;
   value: string;
@@ -476,15 +517,21 @@ function TextField({
   hint?: string | string[];
   widthClass?: string;
   center?: boolean;
+  // 학번처럼 숫자만 입력받는 필드에서 모바일 키보드를 숫자 자판으로 띄울 때 사용
+  numeric?: boolean;
 }) {
   const hints = hint == null ? [] : Array.isArray(hint) ? hint : [hint];
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-[19px] font-extrabold text-white">{title}</p>
+      <p className="text-[19px] font-extrabold text-white">
+        <TitleText text={title} />
+      </p>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        inputMode={numeric ? 'numeric' : undefined}
+        pattern={numeric ? '[0-9]*' : undefined}
         className={`h-[38px] ${widthClass} rounded-lg bg-[#d9d9d9] px-3 text-[15px] text-black outline-none placeholder:text-[13px] placeholder:text-[#6d6d6d] placeholder:opacity-100 ${
           center ? 'text-center' : ''
         }`}
@@ -534,7 +581,9 @@ function TextAreaField({
 }) {
   return (
     <div className={`flex flex-col gap-2.5 ${className}`}>
-      <p className="text-[19px] font-extrabold text-white">{title}</p>
+      <p className="text-[19px] font-extrabold text-white">
+        <TitleText text={title} />
+      </p>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -569,7 +618,11 @@ function RadioGroup<T extends string>({
 }) {
   return (
     <div className={bare ? '' : 'flex flex-col gap-2.5'}>
-      {title && <p className="text-[19px] font-extrabold text-white">{title}</p>}
+      {title && (
+        <p className="text-[19px] font-extrabold text-white">
+          <TitleText text={title} />
+        </p>
+      )}
       <div className="flex flex-col gap-2.5">
         {options.map((opt) => {
           const selected = value === opt;

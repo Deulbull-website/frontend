@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import HeroVideoModal from '../components/HeroVideoModal';
+import { useRef, useState } from 'react';
+// import HeroVideoModal from '../components/HeroVideoModal'; // 동영상 팝업 — 일단 비활성화
 import HeroCarousel, { DotsPager } from '../components/HeroCarousel';
 import Reveal from '../components/Reveal';
 import About from './About';
@@ -14,82 +14,14 @@ const HERO_IMAGES = Array.from(
   (_, i) => `/images/hero/main${i + 1}.jpg`,
 );
 
-// 마우스 휠 한 칸(약 100px)만으로 바로 다음/이전 화면으로 넘어가지 않도록,
-// 이 정도 누적 스크롤량이 쌓여야 화면 전환이 일어나게 합니다(대략 휠 두 칸 분량).
-const WHEEL_THRESHOLD = 220;
-const TRANSITION_LOCK_MS = 700;
-
 export default function Home() {
   const [heroIndex, setHeroIndex] = useState(0);
   const heroRef = useRef<HTMLElement | null>(null);
-  const wheelAccumRef = useRef(0);
-  const transitioningRef = useRef(false);
-
-  // 히어로 → About → Poster → Location 순서로, 휠 두 칸 정도 쌓여야
-  // 다음/이전 화면으로 완전히 전환되도록 하는 페이지 넘김 효과.
-  // (각 화면에는 data-snap-section 속성이 붙어 있습니다.)
-  useEffect(() => {
-    function getSections() {
-      return Array.from(document.querySelectorAll<HTMLElement>('[data-snap-section]'));
-    }
-
-    function handleWheel(e: WheelEvent) {
-      if (transitioningRef.current) {
-        e.preventDefault();
-        return;
-      }
-
-      const sections = getSections();
-      if (sections.length === 0) return;
-
-      const scrollY = window.scrollY;
-      let currentIndex = 0;
-      for (let i = 0; i < sections.length; i += 1) {
-        if (sections[i].offsetTop <= scrollY + 2) currentIndex = i;
-      }
-      const current = sections[currentIndex];
-
-      // 현재 화면에서 아래로 스크롤할 때: 일정량 이상 쌓여야 다음 화면으로 완전히 전환
-      if (e.deltaY > 0 && currentIndex < sections.length - 1) {
-        e.preventDefault();
-        wheelAccumRef.current += e.deltaY;
-        if (wheelAccumRef.current >= WHEEL_THRESHOLD) {
-          wheelAccumRef.current = 0;
-          transitioningRef.current = true;
-          sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
-          window.setTimeout(() => {
-            transitioningRef.current = false;
-          }, TRANSITION_LOCK_MS);
-        }
-        return;
-      }
-
-      // 현재 화면 맨 위 지점에서 위로 스크롤할 때: 일정량 이상 쌓여야 이전 화면으로 완전히 복귀
-      if (e.deltaY < 0 && currentIndex > 0 && scrollY <= current.offsetTop + 2) {
-        e.preventDefault();
-        wheelAccumRef.current += e.deltaY;
-        if (wheelAccumRef.current <= -WHEEL_THRESHOLD) {
-          wheelAccumRef.current = 0;
-          transitioningRef.current = true;
-          sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
-          window.setTimeout(() => {
-            transitioningRef.current = false;
-          }, TRANSITION_LOCK_MS);
-        }
-        return;
-      }
-
-      wheelAccumRef.current = 0;
-    }
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, []);
 
   return (
     <>
-      {/* 영상 파일 준비되면 이 경로만 실제 파일로 교체하면 됩니다. */}
-      <HeroVideoModal videoSrc="/videos/hero-preview.mp4" />
+      {/* 동영상 팝업 — 일단 비활성화 (다시 켤 때는 위 import와 아래 한 줄만 복구하면 됩니다) */}
+      {/* <HeroVideoModal videoSrc="/videos/hero-preview.mp4" /> */}
 
       <section
         ref={heroRef}
@@ -144,22 +76,32 @@ export default function Home() {
           </a>
         </div>
 
-        {/* 중앙 타이틀 */}
-        <Reveal className="absolute inset-x-6 bottom-[106px] flex flex-col items-center gap-[12px] text-center">
-          <p className="text-xs tracking-[0.34em] text-white/66">
-            HANSUNG UNIV.BAND CLUB
-          </p>
-          <h1 className="font-['Bebas_Neue',_Impact,_sans-serif] text-[96px] leading-[0.86] tracking-[0.06em] text-white">
-            DEULBULL
-          </h1>
-          <div className="h-px w-11 bg-white/50" />
-          <p className="text-[26px] font-bold tracking-[0.04em] text-white">
-            신입부원 모집
-          </p>
-          <p className="text-sm font-light tracking-[0.2em] text-white/70">
-            한성대학교 중앙노래패
-          </p>
-        </Reveal>
+        {/* 중앙 타이틀 — 줄마다 순서대로 아래에서 위로 올라오며 나타남 */}
+        <div className="absolute inset-x-6 bottom-[106px] flex flex-col items-center gap-[12px] text-center">
+          <Reveal delay={0}>
+            <p className="text-xs tracking-[0.34em] text-white/66">
+              HANSUNG UNIV.BAND CLUB
+            </p>
+          </Reveal>
+          <Reveal delay={100}>
+            <h1 className="font-['Bebas_Neue',_Impact,_sans-serif] text-[96px] leading-[0.86] tracking-[0.06em] text-white">
+              DEULBULL
+            </h1>
+          </Reveal>
+          <Reveal delay={200}>
+            <div className="h-px w-11 bg-white/50" />
+          </Reveal>
+          <Reveal delay={280}>
+            <p className="text-[26px] font-bold tracking-[0.04em] text-white">
+              신입부원 모집
+            </p>
+          </Reveal>
+          <Reveal delay={360}>
+            <p className="text-sm font-light tracking-[0.2em] text-white/70">
+              한성대학교 중앙노래패
+            </p>
+          </Reveal>
+        </div>
       </section>
 
       {/* 히어로 아래로 스크롤하면 ABOUT(본문) 내용이 이어서 나옵니다. */}
